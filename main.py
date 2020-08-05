@@ -1,11 +1,14 @@
 # Processing of data for NT
 import os
+import warnings
 from typing import List
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
 from pyproj import CRS
+
+warnings.filterwarnings("ignore", "Only Polygon objects", UserWarning)
 
 
 def load_data():
@@ -72,6 +75,9 @@ def main():
 
 
 if __name__ == '__main__':
+    # TODO: Produce Area bin and count the average per area bin?
+    # TODO: Calculate distance to nearest larger pole of the state (percentage of AREAPs).
+    #  Divide distance in bins and average growth?
     # a, b = main()
     # shps = load_shapes()
     a = main()
