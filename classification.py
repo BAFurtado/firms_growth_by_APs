@@ -37,7 +37,7 @@ def distance_to_largest(ap):
     print(ap.groupby(by='d_to_top_q').agg('mean')['cres_17_10'])
 
 
-def distance_to_tops(ap):
+def distance_to_tops(ap, name):
     # 1% of top APs
     how_many = int(len(ap)/25)
     ap = ap.sort_values(by='num_firms_', ascending=False).reset_index(drop=True)
@@ -50,12 +50,22 @@ def distance_to_tops(ap):
     top, div, labels = get_range(ap, 'closest')
     ap['closest_q'] = pd.cut(ap.closest, range(0, top, div), right=False, labels=labels)
     ap.closest_q = ap.closest_q.astype(str)
-    print(ap.groupby(by='closest_q').agg('mean')['cres_17_10'])
-    ap.to_file('ap.shp')
-    return ap
+    out = ap.groupby(by='closest_q').agg('mean')['cres_17_10']
+    out.name = name
+    ap.to_file(f'results/{name}.shp')
+    return ap, out
+
+
+def main():
+    shps = load_shapes()
+    out_shps = dict()
+    classification = pd.DataFrame()
+    for key in shps:
+        out_shps[key], out = distance_to_tops(shps[key], name=key)
+        classification = pd.merge(classification, out, right_index=True, left_index=True, how='outer')
+    classification.to_csv('results/output.csv', sep=';')
 
 
 if __name__ == '__main__':
-    # shps = load_shapes()
-    a = gpd.read_file('aps_2010_rais_10_17_ufs/52.shp')
-    a = distance_to_tops(a)
+    main()
+
