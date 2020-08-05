@@ -66,12 +66,12 @@ def distance_to_tops(ap, name, dist_parameter=50):
     return ap, out
 
 
-def main():
+def main(dist_parameter):
     shps = load_shapes()
     out_shps = dict()
     classification = pd.DataFrame()
     for key in shps:
-        out_shps[key], out = distance_to_tops(shps[key], name=key)
+        out_shps[key], out = distance_to_tops(shps[key], name=key, dist_parameter=dist_parameter)
         classification = pd.merge(classification, out, right_index=True, left_index=True, how='outer')
     # classification.to_csv('results/output.csv', sep=';')
     return classification
@@ -90,9 +90,10 @@ def plotting(data, mean_color='red', many=False, ax=None, dist=None):
         ax.legend(frameon=False, ncol=5)
         plt.show()
         fig, ax = plt.subplots()
-    ax.plot(data.index, data.mean(axis=1), color=mean_color, linewidth=3, alpha=.8, label=dist)
-    ax.plot(data.index, data.mean(axis=1) + data.std(axis=1), color=mean_color, linewidth=3, alpha=.4)
-    ax.plot(data.index, data.mean(axis=1) - data.std(axis=1), color=mean_color, linewidth=3, alpha=.4)
+    ax.plot(data.index, data.mean(axis=1), color=mean_color, linewidth=3, alpha=.8, label=str(dist))
+    ax.plot(data.index, data.mean(axis=1) + data.std(axis=1), color=mean_color, linewidth=1, alpha=.4)
+    ax.plot(data.index, data.mean(axis=1) - data.std(axis=1), color=mean_color, linewidth=1, alpha=.4)
+    return ax
 
 
 if __name__ == '__main__':
@@ -101,8 +102,8 @@ if __name__ == '__main__':
     cs = ['violet', 'red', 'grey', 'black']
     fig, axes = plt.subplots()
     for i, v in enumerate(values_dist):
-        d = main()
-        plotting(d, mean_color=cs[i], many=True, ax=axes, dist=v)
+        d = main(v)
+        axes = plotting(d, mean_color=cs[i], many=True, ax=axes, dist=v)
     axes.legend(frameon=False)
     plt.show()
     fig.savefig('results/output.png')
