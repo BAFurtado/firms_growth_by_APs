@@ -77,8 +77,7 @@ def main():
     return classification
 
 
-def plotting(data, mean_color='red', many=False, ax=None):
-    matplotlib.style.use('seaborn')
+def plotting(data, mean_color='red', many=False, ax=None, dist=None):
     try:
         data.index = data.closest_q
         data = data.drop('closest_q', axis=1)
@@ -91,18 +90,21 @@ def plotting(data, mean_color='red', many=False, ax=None):
         ax.legend(frameon=False, ncol=5)
         plt.show()
         fig, ax = plt.subplots()
-    ax.plot(data.index, data.mean(axis=1), color=mean_color, linewidth=3, alpha=.8, label='mean')
-    ax.plot(data.index, data.mean(axis=1) + data.std(axis=1), color='red', linewidth=3, alpha=.4)
-    ax.plot(data.index, data.mean(axis=1) - data.std(axis=1), color='red', linewidth=3, alpha=.4)
-    ax.legend(frameon=False)
+    ax.plot(data.index, data.mean(axis=1), color=mean_color, linewidth=3, alpha=.8, label=dist)
+    ax.plot(data.index, data.mean(axis=1) + data.std(axis=1), color=mean_color, linewidth=3, alpha=.4)
+    ax.plot(data.index, data.mean(axis=1) - data.std(axis=1), color=mean_color, linewidth=3, alpha=.4)
 
 
 if __name__ == '__main__':
+    matplotlib.style.use('seaborn')
     values_dist = [10, 25, 50, 100]
     cs = ['violet', 'red', 'grey', 'black']
     fig, axes = plt.subplots()
     for i, v in enumerate(values_dist):
         d = main()
-        plotting(d, mean_color=cs[i], many=True, ax=axes)
+        plotting(d, mean_color=cs[i], many=True, ax=axes, dist=v)
+    axes.legend(frameon=False)
+    plt.show()
+    fig.savefig('results/output.png')
 
 
