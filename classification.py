@@ -91,6 +91,7 @@ def plotting(data, mean_color='red', many=False, ax=None, dist=None):
         plt.show()
         fig, ax = plt.subplots()
     ax.plot(data.index, data.mean(axis=1), color=mean_color, linewidth=3, alpha=.8, label=str(dist))
+    print(f'Considering distance parameters as {dist}, mean value is: {data.mean(axis=1)}')
     ax.plot(data.index, data.mean(axis=1) + data.std(axis=1), color=mean_color, linewidth=1, alpha=.4)
     ax.plot(data.index, data.mean(axis=1) - data.std(axis=1), color=mean_color, linewidth=1, alpha=.4)
     return ax
