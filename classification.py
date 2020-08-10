@@ -78,18 +78,19 @@ def main(dist_parameter):
 
 
 def plotting(data, mean_color='red', many=False, ax=None, dist=None):
+    #
     try:
         data.index = data.closest_q
         data = data.drop('closest_q', axis=1)
     except AttributeError:
         pass
-    if not many:
-        fig, ax = plt.subplots()
+    if many:
         for i, col in enumerate(data.columns):
+            fig, ax = plt.subplots()
             ax.plot(data.index, data[col], color=cor[i], label=col[:2])
-        ax.legend(frameon=False, ncol=5)
-        plt.show()
-        fig, ax = plt.subplots()
+            ax.legend(frameon=False, ncol=5)
+            plt.show()
+    fig, ax = plt.subplots()
     ax.plot(data.index, data.mean(axis=1), color=mean_color, linewidth=3, alpha=.8, label=str(dist))
     print(f'Considering distance parameters as {dist}, mean value is: {data.mean(axis=1)}')
     ax.plot(data.index, data.mean(axis=1) + data.std(axis=1), color=mean_color, linewidth=1, alpha=.4)
@@ -99,14 +100,25 @@ def plotting(data, mean_color='red', many=False, ax=None, dist=None):
 
 if __name__ == '__main__':
     matplotlib.style.use('seaborn')
-    values_dist = [10, 25, 50, 100]
+    values_dist = [80, 90, 100, 120, 150, 180]
+    # values_dist = [100]
+    many = False
     cs = ['violet', 'red', 'grey', 'black']
     fig, axes = plt.subplots()
+    out = dict()
     for i, v in enumerate(values_dist):
         d = main(v)
-        axes = plotting(d, mean_color=cs[i], many=True, ax=axes, dist=v)
+        axes = plotting(d, mean_color=cs[i], many=many, ax=axes, dist=v)
+        out[v] = d
     axes.legend(frameon=False)
     plt.show()
     fig.savefig('results/output.png')
+    for col in d.columns:
+        fig, ax = plt.subplots()
+        for k in out:
+            ax.plot(out[k][col].index, out[k][col], label=k)
+        ax.set_title(col)
+        plt.legend(frameon=False)
+        fig.savefig(f'results/{col}.png')
 
 
